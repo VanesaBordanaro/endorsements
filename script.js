@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 const appSettings = { databaseURL: "https://playground-df09d-default-rtdb.firebaseio.com/"};
 
@@ -14,77 +14,47 @@ const publishBtn = document.getElementById("publish-btn");
 const endorsementList = document.getElementById("endorsement-list");
 
 publishBtn.addEventListener("click", function () {
-  const textareaValue = inputText.value;
-  const fromValue = fromInput.value;
-  const toValue = toInput.value;
 
-  if(textareaValue && fromValue && toValue) {
-    clearFields(textareaValue, fromValue, toValue)
-    pushData(textareaValue, fromValue, toValue)
-    textareaValue.style.border = "none"
-    fromValue.style.border = "none"
-    toValue.style.border = "none"
-  } else {
-    clearFields(textareaValue, fromValue, toValue)
-    textareaValue.style.border = "2px solid red"
-    fromValue.style.border = "2px solid red"
-    toValue.style.border = "2px solid red"
-  }
-});
-
-function clearFields() {
-    const textarea = document.getElementById("text");
-    const from = document.getElementById("from");
-    const to = document.getElementById("to");
-    
-    textarea.value = "";
-    from.value = "";
-    to.value = "";
-}
-
-function pushData(review, sender, to) {
-    let arr = [review, sender, to, 0]
-    push(endorsementInDB, arr)
-}
-onValue(endorsementInDB, function (snapshot) {
-    endorsementList.innerHTML = ""
-  if (snapshot.exists()) {
-    let itemsArray = Object.entries(snapshot.val());
-
-    for (let i = 0; i < itemsArray.length; i++) {
-      let currentItem = itemsArray[i];
-      appendItemToMessagesListEl(currentItem);
+    const message = {
+        senderName : fromInput.value,
+        receiverName : toInput.value,
+        endorsement : inputText.value
     }
-  }
+
+  clearFields(inputText)
+  clearFields(fromInput)
+  clearFields(toInput)
+
+  push(endorsementInDB, message)
 });
 
+function clearFields(inputField) {
+    inputField.value = ""
+}
 
-function appendItemToMessagesListEl(review) {
-  let reviewId = review[0];
-  let reviewData = review[1];
-  let reviewText = reviewData[0];
-  let reviewFrom = reviewData[1];
-  let reviewTo = reviewData[2];
+onValue(endorsementInDB, function(snapshot) {
+    
+    let itemsArray = Object.entries(snapshot.val())
 
-  let newEl = document.createElement("li");
-  let mainConEl = document.createElement("div");
-  let toEl = document.createElement("h3");
-  let reviewEl = document.createElement("p");
-  let flexEl = document.createElement("div");
-  let fromEl = document.createElement("h3");
+    clearEndorsementList()
 
-  toEl.textContent = `To ${reviewTo}`;
-  reviewEl.textContent = reviewText;
-  fromEl.textContent = `From ${reviewFrom}`;
+    itemsArray.forEach(function(message) {
+        endorsementList.innerHTML += createEndorsementCard(message)
+    })
+});
 
-  newEl.appendChild(mainConEl);
-  mainConEl.appendChild(toEl);
-  mainConEl.appendChild(reviewEl);
-  mainConEl.appendChild(flexEl);
-  flexEl.appendChild(fromEl);
+function clearEndorsementList() {
+    endorsementList.innerHTML = ""
+}
 
-  let exactLocationInDB = ref(database, `endorsement/${reviewId}`)
-  update(exactLocationInDB)
-
-  endorsementList.append(newEl);
+function createEndorsementCard(message) {
+    return ` <li class = "card">
+        <div class= "card-header">
+            To <span>${message[1].receiverName}</span>
+        </div>
+        ${message[1].endorsement}
+        <div class = "card-footer">
+            From ${message[1].senderName}</span>
+        </div>
+    </li>`
 }
