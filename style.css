@@ -83,8 +83,7 @@ ul {
 }
 
 ul li {
-    font-family: 'Inter', sans-serif;;
-    width: 317px;
+    font-family: 'Inter', sans-serif;
     list-style: none;
     background: #FFFFFF;
     color: #1b1924;
@@ -99,6 +98,7 @@ ul li {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 317px;
 }
 
 .card-header, .card-footer {
