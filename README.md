@@ -13,3 +13,7 @@ A practice base project that allows to publish the endorsements. The form contai
 ## Preview 
 
   - <a href="https://vanesabordanaro.github.io/endorsements/">Live Preview</a>
+
+## Overview
+
+<img src="preview.png" alt="overview"></a>
